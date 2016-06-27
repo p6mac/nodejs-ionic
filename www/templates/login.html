@@ -1,0 +1,24 @@
+<ion-header-bar align-title="center" class="bar-dark">
+  	<h1 class="title">Chatting Chat</h1>
+</ion-header-bar>
+<ion-content class="has-header" view-title="Please Login">
+	<div class="list">
+      <div class="item item-body">
+        <center>
+          <img src="www/img/cute_chat-logo.png" alt="Logo" />
+        </center>
+      </div>
+  		<label class="item item-input item-floating-label">
+    		<span class="input-label">Username</span>
+   	 		<input type="text" placeholder="Username" ng-model="LoginCtrl.account.username">
+  		</label>
+  		<label class="item item-input item-floating-label">
+    		<span class="input-label">Password</span>
+    		<input type="password" placeholder="Password" ng-model="LoginCtrl.account.password">
+  		</label>
+	</div>
+    <div class="button-bar">
+      <button type="button" class="button button-stable" ng-click="LoginCtrl.login()" ><u> Login </u></button>
+      <button type="button" class="button button-stable"><u>Sign Up </u></button>
+    </div>
+</ion-content>

@@ -1,0 +1,105 @@
+var express = require('express');
+var Account = require('../models/account');
+var Chat = require('../models/chats');
+var jwt = require('jsonwebtoken');
+var config = require('config');
+var router = express.Router();
+var app = express();
+
+app.set('superSecret', config.token.secret);
+
+router.get('/users', function(req,res){
+    Account.find(function(err,accounts){
+      if (err) {
+        res.json({ sucess : false, message : err})
+      } else if (accounts.length <= 0) {
+        res.json({ success : false, message : 'No Users'})
+      } else {
+        res.json(accounts);
+      }
+
+    })
+});
+router.get('/users/:name', function(req,res){
+});
+
+router.post('/users', function(req,res){
+  Account.find({ username : req.body.username }, function(err,account){
+    if (err) {
+      res.json({ success : false, message : err })
+    } else if (account.length <= 0) {
+      var account = new Account({ 
+          username : req.body.username, 
+          password : req.body.password,
+          name : req.body.name
+      });
+      account.save(function(err,account){
+        if (err) {
+          res.json({ success : false, message : err});
+        } else {
+          res.json(account);
+          }
+        })
+    } else {
+        res.json({ success : false, message : 'Username is already exist' });
+        }
+    });
+});
+
+router.delete('/users/:username', function(req, res){
+  Account.findOneAndRemove( { username : req.params.username }, function(err){
+    if (err) {
+      res.json({ success : false, message : 'Error Deleting User' })
+    } else {
+      res.json({ sucess : true, message : 'success'});
+    }
+  })
+});
+
+router.post('/auth', function(req,res){
+  Account.find({ username : req.body.username }, function(err, account){
+    if (err) {
+      res.json({ success : false, message : 'Opps!. Something Went Wrong.' });
+    } else if (account.length <= 0){
+      res.json({ success : false, message : 'Authentication Failed. User Not Found.'});
+    } else if (account[0].password != req.body.password) {
+    	console.log(account);
+			res.json({ success : false, message : 'Authentication Failed. Wrong Password.' });
+    } else {
+			var token = jwt.sign(account[0], app.get('superSecret'),{
+				expiresIn : 240
+			});
+			
+			res.json ({
+				success : true,
+				message : 'Authentication Success.',
+				token : token
+			});
+	  }
+	});
+});
+
+router.get('/messages', function(req,res){
+  Chat.find({}, function(err, chat){
+    if (err) {
+      res.json({ success : false, message : 'Opps!. Something went wrong'}); 
+    } else if (chat.length <= 0){
+      res.json({ success : false, message : 'No Messages' }); 
+    } else {
+      res.json(chat);
+    }
+  }); 
+});
+
+router.post('/messages', function(req,res){
+  var chat = new Chat ({ name : req.body.name, message : req.body.message, date : Date.now()});
+  chat.save(function(err,chat){
+     if(err){
+      res.json({ success : false, message : 'opps!. Something Went Wrong'});
+     } else {
+        res.json(chat);
+     } 
+  });
+});
+
+module.exports = router;

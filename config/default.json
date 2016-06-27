@@ -1,0 +1,11 @@
+{
+  "config" : {
+    "host" : "localhost",
+    "user" : "root",
+    "password" : "",
+    "database" : "chat"
+  },
+  "token" : {
+		"secret" : "keithminetteganalongo"
+	}
+}
